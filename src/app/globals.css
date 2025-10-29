@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bijnis-primary: #ffffff;
+  --color-bijnis-secondary: #020D06;
+  --color-bijnis-accent: #078236;
+  --color-bijnis-bg: #020D06;
+  --color-bijnis-brand: #078236;
+}
+
+@layer base {
+  html {
+    scroll-behavior: auto; /* Lenis will handle smooth scrolling */
+    background-color: #020D06;
+  }
+
+  body {
+    font-family: var(--font-outfit), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    background-color: #020D06;
+    color: #ffffff;
+  }
+
+  /* Custom scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #020D06;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #1f2937;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #374151;
+  }
+}
+
+@layer utilities {
+  /* Animation utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 0.2s;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 0.4s;
+  }
+
+  /* Color switching animation for 60 Minute text */
+  .animated-gradient {
+    color: #01B044 !important;
+    animation: color-switch 0.8s linear infinite !important;
+  }
+
+  @keyframes color-switch {
+    0%, 49% {
+      color: #01B044;
+    }
+    50%, 100% {
+      color: #078236;
+    }
+  }
+
+  /* Animated dash for squiggly underlines */
+  .animate-dash {
+    stroke-dasharray: 5 5;
+    animation: dash 1s linear infinite;
+  }
+
+  @keyframes dash {
+    to {
+      stroke-dashoffset: -20;
+    }
+  }
+
+  /* Floating animation for interactive words */
+  .float-subtle {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  /* Smooth fade transition for overlays */
+  .smooth-fade {
+    transition: opacity 1.2s ease-in-out !important;
+  }
+
+  /* Slide right text animation */
+  .slide-up-text {
+    animation: slideRightFade 0.5s ease-out forwards;
+  }
+
+  @keyframes slideRightFade {
+    0% {
+      transform: translateX(-30px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animated-gradient {
+    animation: none !important;
+    color: #01B044 !important;
+    text-shadow: none !important;
+  }
+}
