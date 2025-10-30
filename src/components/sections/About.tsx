@@ -10,7 +10,7 @@ import Image from 'next/image';
  */
 export function About() {
   const sectionRef = useRef<HTMLElement>(null);
-  const freedomRef = useRef<HTMLSpanElement>(null);
+  const freedomRef = useRef<HTMLDivElement>(null);
   const carousel1Ref = useRef<HTMLDivElement>(null);
   const carousel2Ref = useRef<HTMLDivElement>(null);
   const carousel3Ref = useRef<HTMLDivElement>(null);
