@@ -1,19 +1,21 @@
 import { Hero } from '@/components/sections/Hero';
-import { Features } from '@/components/sections/Features';
+import { LocationsMap } from '@/components/sections/LocationsMap';
 import { About } from '@/components/sections/About';
 import { Mission } from '@/components/sections/Mission';
 import { BlogSection } from '@/components/sections/BlogSection';
 import { Contact } from '@/components/sections/Contact';
 import { Footer } from '@/components/sections/Footer';
 import { Header } from '@/components/layout/Header';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 export default function Home() {
   return (
     <>
+      <LoadingAnimation />
       <Header />
       <main className="relative">
         <Hero />
-        <Features />
+        <LocationsMap />
         <About />
         <Mission />
         <BlogSection />

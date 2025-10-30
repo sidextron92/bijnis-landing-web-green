@@ -38,7 +38,6 @@ export function Header() {
 
   const navItems = [
     { label: 'Home', id: 'hero' },
-    { label: 'Features', id: 'features' },
     { label: 'About', id: 'about' },
     { label: 'Mission', id: 'mission' },
     { label: 'Blog', id: 'blog' },

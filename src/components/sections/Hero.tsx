@@ -114,8 +114,8 @@ export function Hero() {
       {/* Top Part - 35% - Title */}
       <div className="relative flex items-end justify-center text-center pb-4 z-30" style={{ height: '35%' }}>
         <h1 className="hero-title text-4xl md:text-6xl lg:text-7xl font-bold px-6">
-          India's <span className="animated-gradient inline-block relative" style={{ minWidth: '280px' }}>
-            <span ref={textRef} className="block">
+          India's <span className="animated-gradient inline-block relative">
+            <span ref={textRef} className="inline-block">
               {heroTexts[currentTextIndex]}
             </span>
           </span>
@@ -180,15 +180,18 @@ export function Hero() {
         </div>
 
         {/* CTAs */}
-        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col sm:flex-row gap-4 justify-center items-center z-40">
-          <Button size="lg" magnetic className="hero-cta">
-            Get Started
-          </Button>
+        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex justify-center items-center z-40">
           <Button
             size="lg"
             variant="outline"
             magnetic
             className="hero-cta"
+            onClick={() => {
+              const nextSection = document.getElementById('locations');
+              if (nextSection) {
+                nextSection.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
           >
             Learn More
           </Button>
