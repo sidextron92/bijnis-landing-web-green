@@ -43,7 +43,7 @@ export function LoadingAnimation() {
       });
     }, 100);
 
-    // Fallback: If video doesn't load within 3 seconds, skip it
+    // Fallback: If video doesn't load within 2 seconds, skip it
     loadTimeout = setTimeout(() => {
       console.log('Video loading timeout - skipping animation');
       clearInterval(progressInterval);
@@ -57,7 +57,7 @@ export function LoadingAnimation() {
           }
         });
       }
-    }, 3000);
+    }, 2000);
 
     // Video loaded event
     const handleVideoLoaded = () => {
@@ -66,25 +66,30 @@ export function LoadingAnimation() {
       setProgress(100);
       setVideoLoaded(true);
 
-      // Try to play the video
-      const playPromise = video.play();
+      // Small delay before trying to play
+      setTimeout(() => {
+        // Try to play the video
+        const playPromise = video.play();
 
-      if (playPromise !== undefined) {
-        playPromise.catch((error) => {
-          console.log('Video autoplay failed:', error);
-          // Skip to main content if autoplay fails
-          if (containerRef.current) {
-            gsap.to(containerRef.current, {
-              opacity: 0,
-              duration: 0.5,
-              ease: 'power2.inOut',
-              onComplete: () => {
-                setShowLoading(false);
-              }
-            });
-          }
-        });
-      }
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            console.log('Video playing successfully');
+          }).catch((error) => {
+            console.log('Video autoplay failed:', error);
+            // Skip to main content if autoplay fails
+            if (containerRef.current) {
+              gsap.to(containerRef.current, {
+                opacity: 0,
+                duration: 0.5,
+                ease: 'power2.inOut',
+                onComplete: () => {
+                  setShowLoading(false);
+                }
+              });
+            }
+          });
+        }
+      }, 100);
     };
 
     // Video ended event
@@ -173,6 +178,9 @@ export function LoadingAnimation() {
         muted
         playsInline
         preload="auto"
+        webkit-playsinline="true"
+        x5-playsinline="true"
+        autoPlay={false}
       >
         <source src="/videos/logo_animation.mp4" type="video/mp4" />
       </video>
