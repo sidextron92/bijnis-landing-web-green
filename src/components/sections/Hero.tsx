@@ -88,6 +88,9 @@ export function Hero() {
           loop
           muted
           playsInline
+          webkit-playsinline="true"
+          x5-playsinline="true"
+          preload="auto"
           className="w-full h-full object-cover"
         >
           <source src="/videos/hero-background.mp4" type="video/mp4" />
@@ -124,19 +127,23 @@ export function Hero() {
             className="relative inline-block cursor-pointer group float-subtle"
             onMouseEnter={() => setIsFactoryHovered(true)}
             onMouseLeave={() => setIsFactoryHovered(false)}
+            style={{ willChange: 'transform' }}
           >
             Factory
             <svg
               className="absolute left-0 -bottom-2 w-full h-3 opacity-70 group-hover:opacity-100 transition-opacity"
               viewBox="0 0 200 10"
               preserveAspectRatio="none"
+              style={{ overflow: 'visible' }}
             >
               <path
                 d="M0,5 Q10,2 20,5 T40,5 T60,5 T80,5 T100,5 T120,5 T140,5 T160,5 T180,5 T200,5"
                 stroke="#078236"
                 strokeWidth="2"
                 fill="none"
+                pathLength="100"
                 className="animate-dash"
+                style={{ vectorEffect: 'non-scaling-stroke' }}
               />
             </svg>
           </span>
@@ -145,19 +152,23 @@ export function Hero() {
             className="relative inline-block cursor-pointer group float-subtle"
             onMouseEnter={() => setIsRetailHovered(true)}
             onMouseLeave={() => setIsRetailHovered(false)}
+            style={{ willChange: 'transform' }}
           >
             Retail
             <svg
               className="absolute left-0 -bottom-2 w-full h-3 opacity-70 group-hover:opacity-100 transition-opacity"
               viewBox="0 0 200 10"
               preserveAspectRatio="none"
+              style={{ overflow: 'visible' }}
             >
               <path
                 d="M0,5 Q10,2 20,5 T40,5 T60,5 T80,5 T100,5 T120,5 T140,5 T160,5 T180,5 T200,5"
                 stroke="#078236"
                 strokeWidth="2"
                 fill="none"
+                pathLength="100"
                 className="animate-dash"
+                style={{ vectorEffect: 'non-scaling-stroke' }}
               />
             </svg>
           </span>
