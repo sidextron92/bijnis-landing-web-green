@@ -67,41 +67,49 @@ export function LoadingAnimation() {
       clearTimeout(loadTimeout);
       clearInterval(progressInterval);
       setProgress(100);
-      setVideoLoaded(true);
 
-      // Ensure video is muted before playing (iOS requirement)
-      video.muted = true;
-
-      // Small delay before trying to play (iOS needs this)
+      // Small delay to ensure DOM is ready
       setTimeout(() => {
-        // Try to play the video
-        const playPromise = video.play();
+        setVideoLoaded(true);
 
-        if (playPromise !== undefined) {
-          playPromise.then(() => {
-            console.log('Video playing successfully');
-          }).catch((error) => {
-            console.log('Video autoplay failed, retrying:', error);
-            // iOS sometimes needs a second attempt
-            setTimeout(() => {
-              video.play().catch((retryError) => {
-                console.log('Video retry failed:', retryError);
-                // Skip to main content if both attempts fail
-                if (containerRef.current) {
-                  gsap.to(containerRef.current, {
-                    opacity: 0,
-                    duration: 0.5,
-                    ease: 'power2.inOut',
-                    onComplete: () => {
-                      setShowLoading(false);
-                    }
-                  });
-                }
-              });
-            }, 100);
-          });
-        }
-      }, 50);
+        // Ensure video is muted before playing (iOS requirement)
+        video.muted = true;
+        video.volume = 0;
+
+        // Slightly longer delay before trying to play (iOS needs this)
+        setTimeout(() => {
+          console.log('Attempting to play video...');
+          // Try to play the video
+          const playPromise = video.play();
+
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              console.log('Video playing successfully');
+            }).catch((error) => {
+              console.log('Video autoplay failed, retrying:', error);
+              // iOS sometimes needs a second attempt
+              setTimeout(() => {
+                video.play().then(() => {
+                  console.log('Video playing after retry');
+                }).catch((retryError) => {
+                  console.log('Video retry failed:', retryError);
+                  // Skip to main content if both attempts fail
+                  if (containerRef.current) {
+                    gsap.to(containerRef.current, {
+                      opacity: 0,
+                      duration: 0.5,
+                      ease: 'power2.inOut',
+                      onComplete: () => {
+                        setShowLoading(false);
+                      }
+                    });
+                  }
+                });
+              }, 200);
+            });
+          }
+        }, 100);
+      }, 100);
     };
 
     // Video ended event

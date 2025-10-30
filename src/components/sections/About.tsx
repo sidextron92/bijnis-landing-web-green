@@ -113,10 +113,10 @@ export function About() {
     <section
       ref={sectionRef}
       id="about"
-      className="relative min-h-screen flex flex-col items-center justify-center py-20 px-6 bg-[#020D06] overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-center py-20 bg-[#020D06] overflow-hidden"
     >
       {/* Title */}
-      <div className="text-left mb-12 max-w-6xl w-full px-6 md:px-12">
+      <div className="text-left mb-12 max-w-6xl w-full px-6">
         <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2">
           <div className="freedom-title-line1 text-white">Building a new era of</div>
           <div ref={freedomRef} className="text-[#03B044] text-5xl md:text-7xl lg:text-8xl my-4">
@@ -127,7 +127,7 @@ export function About() {
       </div>
 
       {/* Carousel */}
-      <div className="w-full max-w-7xl mb-12 overflow-hidden">
+      <div className="w-full mb-12 overflow-hidden">
         <div className="flex gap-8">
           {/* First set */}
           <div ref={carousel1Ref} className="flex gap-8 flex-shrink-0">

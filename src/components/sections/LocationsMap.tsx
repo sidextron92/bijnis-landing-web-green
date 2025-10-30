@@ -156,7 +156,7 @@ export function LocationsMap() {
     <section
       ref={sectionRef}
       id="locations"
-      className="relative min-h-screen flex flex-col items-center justify-center py-20 px-6 bg-[#020D06] overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-center py-20 bg-[#020D06] overflow-hidden"
     >
       {/* Main Title */}
       <div className="text-center mb-6 max-w-6xl w-full">
@@ -177,7 +177,7 @@ export function LocationsMap() {
         </h3>
 
         {/* Mobile: Map then Carousel (stacked) */}
-        <div className="md:hidden flex flex-col items-center gap-6 px-6">
+        <div className="md:hidden flex flex-col items-center gap-6">
           {/* India Map */}
           <div className="india-map w-[280px]" style={{ filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.8))' }}>
             <Image
@@ -246,7 +246,7 @@ export function LocationsMap() {
         </div>
 
         {/* Desktop: Map overlaying Carousel */}
-        <div className="hidden md:block relative w-full px-6 md:px-12 py-8">
+        <div className="hidden md:block relative w-full py-8">
           {/* 3-Row Carousel - Full Width */}
           <div className="space-y-4">
             {/* Row 1 */}
