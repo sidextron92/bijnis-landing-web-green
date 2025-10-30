@@ -65,11 +65,11 @@ export function About() {
         ease: 'power3.out'
       });
 
-      // Carousel animations - continuous scroll
+      // Carousel animations - continuous scroll (faster speed)
       if (carousel1Ref.current) {
         gsap.to(carousel1Ref.current, {
           x: '-100%',
-          duration: 30,
+          duration: 15,
           ease: 'none',
           repeat: -1,
         });
@@ -78,7 +78,7 @@ export function About() {
       if (carousel2Ref.current) {
         gsap.to(carousel2Ref.current, {
           x: '-100%',
-          duration: 30,
+          duration: 15,
           ease: 'none',
           repeat: -1,
         });
@@ -87,7 +87,7 @@ export function About() {
       if (carousel3Ref.current) {
         gsap.to(carousel3Ref.current, {
           x: '-100%',
-          duration: 30,
+          duration: 15,
           ease: 'none',
           repeat: -1,
         });
