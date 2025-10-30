@@ -62,13 +62,12 @@ export function LoadingAnimation() {
       }
     }, 5000);
 
-    // Video ready to play event (use canplaythrough for iOS compatibility)
+    // Video ready to play event
     const handleVideoCanPlay = () => {
       clearTimeout(loadTimeout);
       clearInterval(progressInterval);
       setProgress(100);
 
-      // Small delay to ensure DOM is ready
       setTimeout(() => {
         setVideoLoaded(true);
 
@@ -76,36 +75,26 @@ export function LoadingAnimation() {
         video.muted = true;
         video.volume = 0;
 
-        // Slightly longer delay before trying to play (iOS needs this)
         setTimeout(() => {
-          console.log('Attempting to play video...');
           // Try to play the video
           const playPromise = video.play();
 
           if (playPromise !== undefined) {
             playPromise.then(() => {
-              console.log('Video playing successfully');
+              console.log('Loading video playing successfully');
             }).catch((error) => {
-              console.log('Video autoplay failed, retrying:', error);
-              // iOS sometimes needs a second attempt
-              setTimeout(() => {
-                video.play().then(() => {
-                  console.log('Video playing after retry');
-                }).catch((retryError) => {
-                  console.log('Video retry failed:', retryError);
-                  // Skip to main content if both attempts fail
-                  if (containerRef.current) {
-                    gsap.to(containerRef.current, {
-                      opacity: 0,
-                      duration: 0.5,
-                      ease: 'power2.inOut',
-                      onComplete: () => {
-                        setShowLoading(false);
-                      }
-                    });
+              console.log('Loading video autoplay blocked by iOS - skipping to main content');
+              // iOS blocks autoplay - just skip to main content
+              if (containerRef.current) {
+                gsap.to(containerRef.current, {
+                  opacity: 0,
+                  duration: 0.5,
+                  ease: 'power2.inOut',
+                  onComplete: () => {
+                    setShowLoading(false);
                   }
                 });
-              }, 200);
+              }
             });
           }
         }, 100);
@@ -144,7 +133,6 @@ export function LoadingAnimation() {
       }
     };
 
-    // Use only canplaythrough for iOS compatibility (not loadeddata)
     video.addEventListener('canplaythrough', handleVideoCanPlay, { once: true });
     video.addEventListener('ended', handleVideoEnded);
     video.addEventListener('error', handleVideoError);

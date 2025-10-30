@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
 import './globals.css';
 import { SmoothScroll } from '@/components/layout/SmoothScroll';
+import { Eruda } from '@/components/Eruda';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -31,6 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={outfit.variable}>
       <body className={`${outfit.className} antialiased`}>
+        <Eruda />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

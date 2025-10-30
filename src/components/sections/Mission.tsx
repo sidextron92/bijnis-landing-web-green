@@ -16,8 +16,10 @@ export function Mission() {
   // Generate logos only on client side to avoid hydration mismatch
   useEffect(() => {
     const logos = [];
-    const cols = 6; // 6 columns
-    const rows = 5; // 5 rows = 30 logos total
+    // Reduce density by 50% on mobile (3 columns instead of 6)
+    const isMobile = window.innerWidth < 768;
+    const cols = isMobile ? 3 : 6; // 3 columns on mobile, 6 on desktop
+    const rows = 5; // 5 rows = 15 logos on mobile, 30 on desktop
 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {

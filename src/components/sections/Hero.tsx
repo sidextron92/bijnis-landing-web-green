@@ -49,47 +49,44 @@ export function Hero() {
     return () => clearInterval(interval);
   }, []);
 
-  // Force video to play on iOS
+  // Handle iOS autoplay - play video on first user interaction
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    // Ensure video properties are set for iOS
-    video.muted = true;
-    video.playsInline = true;
-    video.setAttribute('playsinline', '');
-    video.setAttribute('webkit-playsinline', '');
-    video.setAttribute('x5-playsinline', '');
-
-    // Force load and play
-    video.load();
-
-    const attemptPlay = () => {
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((error) => {
-          console.log('Video autoplay prevented:', error);
-          // Retry after a short delay
-          setTimeout(() => {
-            video.play().catch((e) => console.log('Video retry failed:', e));
-          }, 500);
+    const playVideo = () => {
+      if (video.paused) {
+        video.play().catch(() => {
+          // Silently fail if autoplay is blocked
         });
       }
     };
 
-    // Try to play immediately
-    attemptPlay();
-
-    // Also try after video can play
-    const handleCanPlay = () => {
-      attemptPlay();
-    };
-
-    video.addEventListener('canplay', handleCanPlay);
+    // Try to play on any user interaction
+    const events = ['touchstart', 'click', 'scroll'];
+    events.forEach(event => {
+      document.addEventListener(event, playVideo, { once: true });
+    });
 
     return () => {
-      video.removeEventListener('canplay', handleCanPlay);
+      events.forEach(event => {
+        document.removeEventListener(event, playVideo);
+      });
     };
+  }, []);
+
+  // Reset gradient overlays on scroll (mobile behavior)
+  useEffect(() => {
+    const handleScroll = () => {
+      // On mobile, reset both overlays when user scrolls
+      if (window.innerWidth < 768) { // Mobile breakpoint
+        setIsFactoryHovered(false);
+        setIsRetailHovered(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useGSAP(
@@ -133,10 +130,10 @@ export function Hero() {
           loop
           muted
           playsInline
-          preload="auto"
+          webkit-playsinline="true"
+          x5-playsinline="true"
           className="w-full h-full object-cover"
         >
-          <source src="/videos/hero-background.webm" type="video/webm" />
           <source src="/videos/hero-background.mp4" type="video/mp4" />
         </video>
       </div>

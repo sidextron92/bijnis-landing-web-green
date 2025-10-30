@@ -73,9 +73,23 @@
   .animate-dash {
     stroke-dasharray: 5 3;
     animation: dash 1s linear infinite;
+    -webkit-animation: dash 1s linear infinite;
+    will-change: stroke-dashoffset;
   }
 
   @keyframes dash {
+    from {
+      stroke-dashoffset: 0;
+    }
+    to {
+      stroke-dashoffset: -8;
+    }
+  }
+
+  @-webkit-keyframes dash {
+    from {
+      stroke-dashoffset: 0;
+    }
     to {
       stroke-dashoffset: -8;
     }
@@ -193,9 +207,10 @@
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  /* Exclude squiggly line and float animations from reduced motion */
+  *:not(.animate-dash):not(.float-subtle),
+  *:not(.animate-dash):not(.float-subtle)::before,
+  *:not(.animate-dash):not(.float-subtle)::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
