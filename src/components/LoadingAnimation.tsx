@@ -29,6 +29,9 @@ export function LoadingAnimation() {
     const video = videoRef.current;
     if (!video) return;
 
+    // Force load the video immediately for iOS
+    video.load();
+
     let progressInterval: NodeJS.Timeout;
     let loadTimeout: NodeJS.Timeout;
 
@@ -43,7 +46,7 @@ export function LoadingAnimation() {
       });
     }, 100);
 
-    // Fallback: If video doesn't load within 2 seconds, skip it
+    // Fallback: If video doesn't load within 5 seconds, skip it (increased for iOS)
     loadTimeout = setTimeout(() => {
       console.log('Video loading timeout - skipping animation');
       clearInterval(progressInterval);
@@ -57,16 +60,19 @@ export function LoadingAnimation() {
           }
         });
       }
-    }, 2000);
+    }, 5000);
 
-    // Video loaded event
-    const handleVideoLoaded = () => {
+    // Video ready to play event (use canplaythrough for iOS compatibility)
+    const handleVideoCanPlay = () => {
       clearTimeout(loadTimeout);
       clearInterval(progressInterval);
       setProgress(100);
       setVideoLoaded(true);
 
-      // Small delay before trying to play
+      // Ensure video is muted before playing (iOS requirement)
+      video.muted = true;
+
+      // Small delay before trying to play (iOS needs this)
       setTimeout(() => {
         // Try to play the video
         const playPromise = video.play();
@@ -75,21 +81,27 @@ export function LoadingAnimation() {
           playPromise.then(() => {
             console.log('Video playing successfully');
           }).catch((error) => {
-            console.log('Video autoplay failed:', error);
-            // Skip to main content if autoplay fails
-            if (containerRef.current) {
-              gsap.to(containerRef.current, {
-                opacity: 0,
-                duration: 0.5,
-                ease: 'power2.inOut',
-                onComplete: () => {
-                  setShowLoading(false);
+            console.log('Video autoplay failed, retrying:', error);
+            // iOS sometimes needs a second attempt
+            setTimeout(() => {
+              video.play().catch((retryError) => {
+                console.log('Video retry failed:', retryError);
+                // Skip to main content if both attempts fail
+                if (containerRef.current) {
+                  gsap.to(containerRef.current, {
+                    opacity: 0,
+                    duration: 0.5,
+                    ease: 'power2.inOut',
+                    onComplete: () => {
+                      setShowLoading(false);
+                    }
+                  });
                 }
               });
-            }
+            }, 100);
           });
         }
-      }, 100);
+      }, 50);
     };
 
     // Video ended event
@@ -124,16 +136,15 @@ export function LoadingAnimation() {
       }
     };
 
-    video.addEventListener('loadeddata', handleVideoLoaded);
-    video.addEventListener('canplaythrough', handleVideoLoaded);
+    // Use only canplaythrough for iOS compatibility (not loadeddata)
+    video.addEventListener('canplaythrough', handleVideoCanPlay, { once: true });
     video.addEventListener('ended', handleVideoEnded);
     video.addEventListener('error', handleVideoError);
 
     return () => {
       clearInterval(progressInterval);
       clearTimeout(loadTimeout);
-      video.removeEventListener('loadeddata', handleVideoLoaded);
-      video.removeEventListener('canplaythrough', handleVideoLoaded);
+      video.removeEventListener('canplaythrough', handleVideoCanPlay);
       video.removeEventListener('ended', handleVideoEnded);
       video.removeEventListener('error', handleVideoError);
     };
@@ -176,11 +187,12 @@ export function LoadingAnimation() {
           videoLoaded ? 'opacity-100' : 'opacity-0'
         }`}
         muted
+        defaultMuted
         playsInline
         preload="auto"
         webkit-playsinline="true"
         x5-playsinline="true"
-        autoPlay={false}
+        autoPlay={true}
       >
         <source src="/videos/logo_animation.mp4" type="video/mp4" />
       </video>
