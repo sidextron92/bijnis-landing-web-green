@@ -29,9 +29,6 @@ export function LoadingAnimation() {
     const video = videoRef.current;
     if (!video) return;
 
-    // Force load the video immediately for iOS
-    video.load();
-
     let progressInterval: NodeJS.Timeout;
     let loadTimeout: NodeJS.Timeout;
 
@@ -46,9 +43,8 @@ export function LoadingAnimation() {
       });
     }, 100);
 
-    // Fallback: If video doesn't load within 5 seconds, skip it (increased for iOS)
+    // Fallback: If video doesn't load within 5 seconds, skip it
     loadTimeout = setTimeout(() => {
-      console.log('Video loading timeout - skipping animation');
       clearInterval(progressInterval);
       if (containerRef.current) {
         gsap.to(containerRef.current, {
@@ -71,20 +67,13 @@ export function LoadingAnimation() {
       setTimeout(() => {
         setVideoLoaded(true);
 
-        // Ensure video is muted before playing (iOS requirement)
-        video.muted = true;
-        video.volume = 0;
-
+        // Small delay to ensure state update
         setTimeout(() => {
-          // Try to play the video
           const playPromise = video.play();
 
           if (playPromise !== undefined) {
-            playPromise.then(() => {
-              console.log('Loading video playing successfully');
-            }).catch((error) => {
-              console.log('Loading video autoplay blocked by iOS - skipping to main content');
-              // iOS blocks autoplay - just skip to main content
+            playPromise.catch(() => {
+              // iOS blocks autoplay - skip to main content
               if (containerRef.current) {
                 gsap.to(containerRef.current, {
                   opacity: 0,
@@ -103,7 +92,6 @@ export function LoadingAnimation() {
 
     // Video ended event
     const handleVideoEnded = () => {
-      // Fade out the loading screen
       if (containerRef.current) {
         gsap.to(containerRef.current, {
           opacity: 0,
@@ -118,7 +106,6 @@ export function LoadingAnimation() {
 
     // Error event
     const handleVideoError = () => {
-      console.log('Video loading error - skipping animation');
       clearTimeout(loadTimeout);
       clearInterval(progressInterval);
       if (containerRef.current) {
@@ -136,6 +123,9 @@ export function LoadingAnimation() {
     video.addEventListener('canplaythrough', handleVideoCanPlay, { once: true });
     video.addEventListener('ended', handleVideoEnded);
     video.addEventListener('error', handleVideoError);
+
+    // Force load the video
+    video.load();
 
     return () => {
       clearInterval(progressInterval);
