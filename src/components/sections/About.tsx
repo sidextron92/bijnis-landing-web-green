@@ -1,9 +1,19 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '@/lib/gsap';
 import Image from 'next/image';
+
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+  size: number;
+}
 
 /**
  * About/Freedom section with carousel
@@ -14,12 +24,93 @@ export function About() {
   const carousel1Ref = useRef<HTMLDivElement>(null);
   const carousel2Ref = useRef<HTMLDivElement>(null);
   const carousel3Ref = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const [hasExploded, setHasExploded] = useState(false);
 
   const images = [
     { src: '/images/freedom1.png', alt: 'Dead Stock Problem' },
     { src: '/images/freedom2.png', alt: 'Payment Issues' },
     { src: '/images/freedom3.png', alt: 'Cashflow Problems' },
   ];
+
+  // Particle explosion effect
+  useEffect(() => {
+    if (!hasExploded || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const rect = freedomRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    let animationFrameId: number;
+    let localParticles = [...particles];
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      localParticles = localParticles.filter(p => p.life > 0);
+
+      localParticles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.2; // gravity
+        p.life -= 0.02;
+
+        ctx.fillStyle = `rgba(3, 176, 68, ${p.life})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      if (localParticles.length > 0) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
+    };
+
+    animate();
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, [particles, hasExploded]);
+
+  const createParticleExplosion = () => {
+    if (hasExploded) return;
+
+    const rect = freedomRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const newParticles: Particle[] = [];
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    for (let i = 0; i < 50; i++) {
+      const angle = (Math.PI * 2 * i) / 50;
+      const velocity = 3 + Math.random() * 4;
+
+      newParticles.push({
+        id: i,
+        x: centerX,
+        y: centerY,
+        vx: Math.cos(angle) * velocity,
+        vy: Math.sin(angle) * velocity,
+        life: 1,
+        size: 3 + Math.random() * 3,
+      });
+    }
+
+    setParticles(newParticles);
+    setHasExploded(true);
+  };
 
   useGSAP(
     () => {
@@ -38,12 +129,15 @@ export function About() {
         ease: 'power3.out'
       });
 
-      // Emphasize FREEDOM with scale and color animation
+      // Emphasize FREEDOM with scale and color animation + particle explosion
       if (freedomRef.current) {
         gsap.from(freedomRef.current, {
           scrollTrigger: {
             trigger: section,
             start: 'top 75%',
+            onEnter: () => {
+              createParticleExplosion();
+            },
           },
           scale: 0.8,
           opacity: 0,
@@ -119,8 +213,18 @@ export function About() {
       <div className="text-left mb-12 max-w-6xl w-full px-6">
         <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2">
           <div className="freedom-title-line1 text-white">Building a new era of</div>
-          <div ref={freedomRef} className="text-[#03B044] text-5xl md:text-7xl lg:text-8xl my-4">
-            FREEDOM
+          <div className="relative my-4">
+            <div
+              ref={freedomRef}
+              className="text-5xl md:text-7xl lg:text-8xl freedom-gradient"
+            >
+              FREEDOM
+            </div>
+            <canvas
+              ref={canvasRef}
+              className="absolute top-0 left-0 pointer-events-none"
+              style={{ width: '100%', height: '100%' }}
+            />
           </div>
           <div className="freedom-title-line3 text-white">for Factories and Retailers of India</div>
         </h2>

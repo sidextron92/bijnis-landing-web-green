@@ -247,6 +247,19 @@
   .city-badge {
     transition: box-shadow 0.1s ease-out, border-color 0.1s ease-out;
   }
+
+  /* Freedom text static gradient */
+  .freedom-gradient {
+    background: linear-gradient(
+      90deg,
+      #03B044 0%,
+      #05D456 50%,
+      #03B044 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
 
 /* Reduced motion support */
