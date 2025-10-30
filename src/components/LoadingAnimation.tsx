@@ -29,8 +29,11 @@ export function LoadingAnimation() {
     const video = videoRef.current;
     if (!video) return;
 
+    let progressInterval: NodeJS.Timeout;
+    let loadTimeout: NodeJS.Timeout;
+
     // Simulate loading progress
-    const progressInterval = setInterval(() => {
+    progressInterval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 90) {
           clearInterval(progressInterval);
@@ -40,14 +43,48 @@ export function LoadingAnimation() {
       });
     }, 100);
 
+    // Fallback: If video doesn't load within 3 seconds, skip it
+    loadTimeout = setTimeout(() => {
+      console.log('Video loading timeout - skipping animation');
+      clearInterval(progressInterval);
+      if (containerRef.current) {
+        gsap.to(containerRef.current, {
+          opacity: 0,
+          duration: 0.5,
+          ease: 'power2.inOut',
+          onComplete: () => {
+            setShowLoading(false);
+          }
+        });
+      }
+    }, 3000);
+
     // Video loaded event
     const handleVideoLoaded = () => {
+      clearTimeout(loadTimeout);
+      clearInterval(progressInterval);
       setProgress(100);
       setVideoLoaded(true);
-      clearInterval(progressInterval);
 
-      // Play the video
-      video.play();
+      // Try to play the video
+      const playPromise = video.play();
+
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.log('Video autoplay failed:', error);
+          // Skip to main content if autoplay fails
+          if (containerRef.current) {
+            gsap.to(containerRef.current, {
+              opacity: 0,
+              duration: 0.5,
+              ease: 'power2.inOut',
+              onComplete: () => {
+                setShowLoading(false);
+              }
+            });
+          }
+        });
+      }
     };
 
     // Video ended event
@@ -65,13 +102,35 @@ export function LoadingAnimation() {
       }
     };
 
+    // Error event
+    const handleVideoError = () => {
+      console.log('Video loading error - skipping animation');
+      clearTimeout(loadTimeout);
+      clearInterval(progressInterval);
+      if (containerRef.current) {
+        gsap.to(containerRef.current, {
+          opacity: 0,
+          duration: 0.5,
+          ease: 'power2.inOut',
+          onComplete: () => {
+            setShowLoading(false);
+          }
+        });
+      }
+    };
+
     video.addEventListener('loadeddata', handleVideoLoaded);
+    video.addEventListener('canplaythrough', handleVideoLoaded);
     video.addEventListener('ended', handleVideoEnded);
+    video.addEventListener('error', handleVideoError);
 
     return () => {
       clearInterval(progressInterval);
+      clearTimeout(loadTimeout);
       video.removeEventListener('loadeddata', handleVideoLoaded);
+      video.removeEventListener('canplaythrough', handleVideoLoaded);
       video.removeEventListener('ended', handleVideoEnded);
+      video.removeEventListener('error', handleVideoError);
     };
   }, [showLoading]);
 
