@@ -71,13 +71,13 @@
 
   /* Animated dash for squiggly underlines */
   .animate-dash {
-    stroke-dasharray: 2 1;
+    stroke-dasharray: 5 3;
     animation: dash 1s linear infinite;
   }
 
   @keyframes dash {
     to {
-      stroke-dashoffset: -3;
+      stroke-dashoffset: -8;
     }
   }
 
