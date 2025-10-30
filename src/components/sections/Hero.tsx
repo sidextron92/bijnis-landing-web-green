@@ -158,7 +158,7 @@ export function Hero() {
       {/* Top Part - 35% - Title */}
       <div className="relative flex items-end justify-center text-center pb-4 z-30" style={{ height: '35%' }}>
         <h1 className="hero-title text-4xl md:text-6xl lg:text-7xl font-bold px-6">
-          India's <span className="animated-gradient inline-block relative">
+          India's <span className={`animated-gradient inline-block relative ${currentTextIndex === 0 ? 'color-pulse' : ''}`}>
             <span ref={textRef} className="inline-block">
               {heroTexts[currentTextIndex]}
             </span>

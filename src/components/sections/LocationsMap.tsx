@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '@/lib/gsap';
 import Image from 'next/image';
@@ -20,6 +20,7 @@ const cities = [
  */
 export function LocationsMap() {
   const sectionRef = useRef<HTMLElement>(null);
+
   // Mobile refs
   const mobileRow1Ref = useRef<HTMLDivElement>(null);
   const mobileRow2Ref = useRef<HTMLDivElement>(null);
@@ -28,6 +29,66 @@ export function LocationsMap() {
   const desktopRow1Ref = useRef<HTMLDivElement>(null);
   const desktopRow2Ref = useRef<HTMLDivElement>(null);
   const desktopRow3Ref = useRef<HTMLDivElement>(null);
+
+  // City badge component with continuous center detection
+  const CityBadge = ({ city, icon, rowKey, index }: { city: string; icon: React.ReactNode; rowKey: string; index: number }) => {
+    const badgeRef = useRef<HTMLDivElement>(null);
+    const [centerProximity, setCenterProximity] = useState(0); // 0 to 1, where 1 is at center
+
+    useEffect(() => {
+      const badge = badgeRef.current;
+      if (!badge) return;
+
+      const updateProximity = () => {
+        const rect = badge.getBoundingClientRect();
+        const viewportCenter = window.innerWidth / 2;
+        const badgeCenter = rect.left + rect.width / 2;
+
+        // Calculate distance from center (0 = at center, increases as it moves away)
+        const distance = Math.abs(viewportCenter - badgeCenter);
+        const maxDistance = window.innerWidth / 3; // Threshold distance
+
+        // Convert to proximity (1 at center, 0 at maxDistance or beyond)
+        const proximity = Math.max(0, 1 - (distance / maxDistance));
+
+        setCenterProximity(proximity);
+      };
+
+      // Use requestAnimationFrame for smooth updates
+      let animationFrameId: number;
+      const animate = () => {
+        updateProximity();
+        animationFrameId = requestAnimationFrame(animate);
+      };
+
+      animationFrameId = requestAnimationFrame(animate);
+
+      return () => {
+        cancelAnimationFrame(animationFrameId);
+      };
+    }, []);
+
+    // Calculate dynamic styles based on proximity
+    const glowIntensity = centerProximity;
+    const borderOpacity = 0.3 + (centerProximity * 0.5); // Border opacity from 0.3 to 0.8
+
+    return (
+      <div
+        ref={badgeRef}
+        className="city-badge flex items-center gap-2 px-4 py-2 bg-[#0A1B10] rounded-lg whitespace-nowrap border flex-shrink-0"
+        style={{
+          boxShadow: `0 0 ${20 * glowIntensity}px rgba(3, 176, 68, ${0.6 * glowIntensity}), 0 0 ${40 * glowIntensity}px rgba(3, 176, 68, ${0.3 * glowIntensity})`,
+          borderColor: `rgba(3, 176, 68, ${borderOpacity})`,
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          willChange: 'box-shadow, border-color',
+        }}
+      >
+        {icon}
+        <span className="text-white font-medium">{city}</span>
+      </div>
+    );
+  };
 
   useGSAP(
     () => {
@@ -253,15 +314,17 @@ export function LocationsMap() {
             <div className="flex overflow-hidden">
               <div ref={desktopRow1Ref} className="flex gap-6">
                 {[...cities.slice(0, 6), ...cities.slice(0, 6), ...cities.slice(0, 6)].map((city, index) => (
-                  <div
+                  <CityBadge
                     key={`row1-desktop-${index}`}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#0A1B10] rounded-lg whitespace-nowrap border border-[#03B044]/30 flex-shrink-0"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 2L12 8H18L13 12L15 18L10 14L5 18L7 12L2 8H8L10 2Z" fill="#03B044"/>
-                    </svg>
-                    <span className="text-white font-medium">{city}</span>
-                  </div>
+                    city={city}
+                    icon={
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 2L12 8H18L13 12L15 18L10 14L5 18L7 12L2 8H8L10 2Z" fill="#03B044"/>
+                      </svg>
+                    }
+                    rowKey="row1-desktop"
+                    index={index}
+                  />
                 ))}
               </div>
             </div>
@@ -270,15 +333,17 @@ export function LocationsMap() {
             <div className="flex overflow-hidden">
               <div ref={desktopRow2Ref} className="flex gap-6">
                 {[...cities.slice(6, 12), ...cities.slice(6, 12), ...cities.slice(6, 12)].map((city, index) => (
-                  <div
+                  <CityBadge
                     key={`row2-desktop-${index}`}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#0A1B10] rounded-lg whitespace-nowrap border border-[#03B044]/30 flex-shrink-0"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <circle cx="10" cy="10" r="8" fill="#03B044"/>
-                    </svg>
-                    <span className="text-white font-medium">{city}</span>
-                  </div>
+                    city={city}
+                    icon={
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="8" fill="#03B044"/>
+                      </svg>
+                    }
+                    rowKey="row2-desktop"
+                    index={index}
+                  />
                 ))}
               </div>
             </div>
@@ -287,15 +352,17 @@ export function LocationsMap() {
             <div className="flex overflow-hidden">
               <div ref={desktopRow3Ref} className="flex gap-6">
                 {[...cities.slice(12, 18), ...cities.slice(12, 18), ...cities.slice(12, 18)].map((city, index) => (
-                  <div
+                  <CityBadge
                     key={`row3-desktop-${index}`}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#0A1B10] rounded-lg whitespace-nowrap border border-[#03B044]/30 flex-shrink-0"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <rect x="2" y="2" width="16" height="16" rx="3" fill="#03B044"/>
-                    </svg>
-                    <span className="text-white font-medium">{city}</span>
-                  </div>
+                    city={city}
+                    icon={
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <rect x="2" y="2" width="16" height="16" rx="3" fill="#03B044"/>
+                      </svg>
+                    }
+                    rowKey="row3-desktop"
+                    index={index}
+                  />
                 ))}
               </div>
             </div>

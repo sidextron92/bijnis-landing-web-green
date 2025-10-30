@@ -203,6 +203,50 @@
       transform: translateX(0);
     }
   }
+
+  /* Typewriter cursor animation */
+  .typewriter-cursor {
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+  }
+
+  @keyframes blink {
+    0%, 50% {
+      opacity: 1;
+    }
+    51%, 100% {
+      opacity: 0;
+    }
+  }
+
+  /* Color pulse animation for "60 Minute" to emphasize speed */
+  .color-pulse {
+    animation: color-pulse 2s ease-in-out infinite !important;
+  }
+
+  @keyframes color-pulse {
+    0%, 100% {
+      color: #01B044;
+      text-shadow: 0 0 10px rgba(1, 176, 68, 0.5);
+    }
+    25% {
+      color: #078236;
+      text-shadow: 0 0 15px rgba(7, 130, 54, 0.6);
+    }
+    50% {
+      color: #05FF00;
+      text-shadow: 0 0 20px rgba(5, 255, 0, 0.7);
+    }
+    75% {
+      color: #078236;
+      text-shadow: 0 0 15px rgba(7, 130, 54, 0.6);
+    }
+  }
+
+  /* City badge carousel effects */
+  .city-badge {
+    transition: box-shadow 0.1s ease-out, border-color 0.1s ease-out;
+  }
 }
 
 /* Reduced motion support */
