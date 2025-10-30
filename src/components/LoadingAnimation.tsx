@@ -187,7 +187,6 @@ export function LoadingAnimation() {
           videoLoaded ? 'opacity-100' : 'opacity-0'
         }`}
         muted
-        defaultMuted
         playsInline
         preload="auto"
         webkit-playsinline="true"
