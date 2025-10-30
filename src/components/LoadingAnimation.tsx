@@ -201,6 +201,7 @@ export function LoadingAnimation() {
         x5-playsinline="true"
         autoPlay={true}
       >
+        <source src="/videos/logo_animation.webm" type="video/webm" />
         <source src="/videos/logo_animation.mp4" type="video/mp4" />
       </video>
     </div>
